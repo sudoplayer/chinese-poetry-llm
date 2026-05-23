@@ -1,0 +1,35 @@
+# --- Secrets ---
+.env
+
+# --- Training outputs ---
+sft_lora_adapters/
+sft_merged_model/
+sft_lora_output/
+grpo_lora_adapters/
+grpo_merged_model/
+grpo_outputs/
+
+# --- Logs ---
+logs/
+eval_logs/
+grpo_logs/
+training_logs/
+
+# --- Dataset intermediate files ---
+dataset/chinese_poetry_*.csv
+dataset/analysis/*.png
+dataset/*.json
+
+# --- Python ---
+__pycache__/
+.venv/
+venv/
+
+# --- IDE ---
+.vscode/settings.json
+.idea/
+
+# --- Large model files ---
+*.safetensors
+*.bin
+*.gguf
