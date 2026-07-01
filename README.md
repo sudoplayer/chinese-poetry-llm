@@ -10,6 +10,12 @@ Whether you're an NLP researcher, a poetry enthusiast, or looking to integrate a
 
 ---
 
+<p align="center">
+  <img src="assets/figure.png" alt="Singer Pipeline &amp; Results Overview" width="100%">
+</p>
+
+---
+
 ## Why Singer?
 
 | Capability | Description |
@@ -192,18 +198,16 @@ Batch sizes, mixed precision, Flash Attention, and other parameters are pre-tune
 
 Input (in the style of the `Spark` field):
 
-> Strolling the outskirts on a spring day, I see crumbling walls intertwined with new greenery, hear birdsong in the distance, and think of war still raging and letters from home cut off — a mix of sorrow and hope.
+> 我看着大军凯旋归来，尘土飞扬中想起了这些年征战的日子。叛乱终于平定，疆土也恢复了，心里既觉得自豪又有些疲惫。天气从肃杀的秋天变成温暖的春天，就像这场战争从残酷到和平的转变。如今功业已成，该让战马休息，把兵器收起来了。仗打完了，百姓能过安稳日子，这才是最重要的。
 
 Model output (one line per verse, no title or attribution):
 
 ```
-国破山河在，城春草木深。
-感时花溅泪，恨别鸟惊心。
-烽火连三月，家书抵万金。
-白头搔更短，浑欲不胜簪。
+秋野风烟裂甲寒，春潮雨露润旗竿。
+星河倒泻千营雪，剑气横收一帐兰。
+铁骑不惊平野草，金柝空落晓云滩。
+莫向荒台问征战，归心已逐暮天宽。
 ```
-
-(The example above is taken from [`data/sample.csv`](data/sample.csv) for format reference.)
 
 ---
 
