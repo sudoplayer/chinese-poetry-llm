@@ -397,8 +397,6 @@ def parse_args():
     parser = argparse.ArgumentParser(description='诗作评分和Spark生成工具')
     parser.add_argument('--input_csv', type=str, default='chinese_poetry_curated2.csv',
                        help='输入CSV文件路径 (默认: chinese_poetry_curated2.csv)')
-    # parser.add_argument('--input_csv', type=str, default='人教版_律诗合集.csv',
-    #                    help='输入CSV文件路径 (默认: chinese_poetry_curated2.csv)')
     parser.add_argument('--max_concurrent', type=int, default=100,
                        help='最大并发数 (默认: 100)')
     parser.add_argument('--temperature', type=float, default=1.0,

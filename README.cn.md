@@ -25,7 +25,7 @@ Singer 是一套面向**中国古典格律诗**（律诗、绝句）的完整训
 | **灵感驱动创作** | 输入「所见所闻所感」，模型输出完整诗作 —— 贴近真实创作过程 |
 | **完整闭环** | 数据清洗 → SFT → GRPO → 批量评测 → 日志分析，一步不缺 |
 | **消费级 GPU 友好** | 内置 RTX 2080 Ti / RTX 4090 优化配置，4-bit LoRA 低显存训练 |
-| **高质量语料** | 基于 [chinese-poetry](https://github.com/chinese-poetry/chinese-poetry) 开源项目中的全唐诗等经典语料构建，精选 5 万首，覆盖七律、五律、七绝、五绝 |
+| **高质量语料** | 基于 [chinese-poetry](https://github.com/chinese-poetry/chinese-poetry) 开源项目中的全唐诗等经典语料构建，精选 **5 万首**，覆盖七律、五律、七绝、五绝。<br>📥 下载：[Chinese-Poetry-LLM](https://www.modelscope.ai/datasets/sudoplayer/Chinese-Poetry-LLM) @ ModelScope |
 
 ---
 
@@ -113,6 +113,8 @@ GRPO 训练产物默认写入 `grpo_outputs/`、`grpo_lora_adapters/`。
 ---
 
 ## 数据流水线
+
+> 📥 **在 [ModelScope](https://www.modelscope.ai/datasets/sudoplayer/Chinese-Poetry-LLM) 下载精加工后的数据集** —— 包含 `Spark` 灵感字段与 `Content` 诗句字段的完整 CSV，附四维评分元数据。
 
 从 [chinese-poetry](https://github.com/chinese-poetry/chinese-poetry) 开源项目中的原始古典诗词语料到可用训练集，按顺序执行 `dataset/` 目录下的脚本：
 

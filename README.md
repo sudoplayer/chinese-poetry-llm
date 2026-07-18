@@ -25,7 +25,7 @@ Whether you're an NLP researcher, a poetry enthusiast, or looking to integrate a
 | **Inspiration-Driven Composition** | Input what you see, hear, and feel; the model outputs a complete poem — mirroring the real creative process |
 | **Complete Workflow** | Data cleaning → SFT → GRPO → batch evaluation → log analysis, every step included |
 | **Consumer GPU Friendly** | Pre-tuned configurations for RTX 2080 Ti and RTX 4090; 4-bit LoRA for low-memory training |
-| **High-Quality Corpus** | Built on the open-source [chinese-poetry](https://github.com/chinese-poetry/chinese-poetry) project, curated from *Quan Tang Shi* (全唐诗) and other classical collections — 50,000 selected poems spanning heptasyllabic regulated verse (七律), pentasyllabic regulated verse (五律), heptasyllabic quatrains (七绝), and pentasyllabic quatrains (五绝) |
+| **High-Quality Corpus** | Built on the open-source [chinese-poetry](https://github.com/chinese-poetry/chinese-poetry) project, curated from *Quan Tang Shi* (全唐诗) and other classical collections — **50,000** selected poems spanning heptasyllabic regulated verse (七律), pentasyllabic regulated verse (五律), heptasyllabic quatrains (七绝), and pentasyllabic quatrains (五绝).<br>📥 Download: [Chinese-Poetry-LLM](https://www.modelscope.ai/datasets/sudoplayer/Chinese-Poetry-LLM) on ModelScope |
 
 ---
 
@@ -113,6 +113,8 @@ GRPO training artifacts are written to `grpo_outputs/` and `grpo_lora_adapters/`
 ---
 
 ## Data Pipeline
+
+> 📥 **Download the curated dataset on [ModelScope](https://www.modelscope.ai/datasets/sudoplayer/Chinese-Poetry-LLM)** — ready-to-use CSV with both `Spark` and `Content` columns, plus full scoring metadata.
 
 Process raw classical poetry from the [chinese-poetry](https://github.com/chinese-poetry/chinese-poetry) project into usable training sets by executing the scripts in `dataset/` in order:
 

@@ -119,13 +119,11 @@ class PoetryGenreClassifier:
             
             if genre_response:
                 result.update({
-                    'Genre': genre_response.get('体裁', '未知'),
-                    'Classification_Basis': genre_response.get('依据', '无')
+                    'Genre': genre_response.get('体裁', '未知')
                 })
             else:
                 result.update({
-                    'Genre': '分类失败',
-                    'Classification_Basis': '分类失败'
+                    'Genre': '分类失败'
                 })
             
             return result
@@ -168,8 +166,7 @@ class PoetryGenreClassifier:
                         'Author': row.get('Author', ''),
                         'Dynasty': row.get('Dynasty', ''),
                         'Content': row.get('Content', ''),
-                        'Genre': '分类失败',
-                        'Classification_Basis': '分类失败'
+                        'Genre': '分类失败'
                     })
         
         end_time = time.time()
