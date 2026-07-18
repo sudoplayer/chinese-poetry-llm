@@ -46,7 +46,7 @@ class PoetryGenreClassifier:
             api_key=self.api_key,
             base_url="https://api.deepseek.com"
         )
-        self.model = 'deepseek-chat'  # 使用deepseek-chat模型
+        self.model = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")  # 默认 deepseek-chat
         
     def read_poetry_collection(self, csv_path: str) -> pd.DataFrame:
         """读取诗歌合集CSV文件"""

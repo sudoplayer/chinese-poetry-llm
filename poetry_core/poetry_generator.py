@@ -58,7 +58,7 @@ class DeepSeekGenerator:
             api_key=self.api_key,
             base_url="https://api.deepseek.com"
         )
-        self.model = 'deepseek-chat'
+        self.model = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
         
         # 批量生成配置
         self.max_concurrent_requests = max_concurrent_requests
