@@ -77,7 +77,8 @@ class PoetryGenreClassifier:
                     {'role': 'user', 'content': prompt}
                 ],
                 stream=False,
-                temperature=1.0
+                temperature=1.0,
+                extra_body={"thinking": {"type": "disabled"}}
             )
             
             response_content = response.choices[0].message.content.strip()

@@ -134,7 +134,8 @@ class PoetryScorer:
                     {'role': 'user', 'content': prompt}
                 ],
                 stream=False,
-                temperature=self.temperature  # 使用可配置的温度参数
+                temperature=self.temperature,  # 使用可配置的温度参数
+                extra_body={"thinking": {"type": "disabled"}}
             )
             
             response_content = response.choices[0].message.content.strip()

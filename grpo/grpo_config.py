@@ -35,7 +35,7 @@ class Config:
     MAX_CONCURRENT_REQUESTS = 32  # 最大并发请求数
 
     # RL算法选择
-    RL_ALGORITHM = "gspo"  # "grpo" | "gspo" — GSPO 使用序列级 importance sampling，更稳定
+    RL_ALGORITHM = "grpo"  # "grpo" | "gspo" — GSPO 使用序列级 importance sampling，更稳定
 
     # 训练参数
     LORA_RANK = 16

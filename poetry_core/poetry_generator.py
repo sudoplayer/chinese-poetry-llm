@@ -76,7 +76,8 @@ class DeepSeekGenerator:
                     messages=[{"role": "user", "content": prompt}],
                     stream=False,
                     temperature=1.5,
-                    max_tokens=512
+                    max_tokens=512,
+                    extra_body={"thinking": {"type": "disabled"}}
                 )
                 
                 generated_text = response.choices[0].message.content.strip()
