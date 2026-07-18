@@ -21,6 +21,7 @@ dataset/analysis/*.png
 dataset/*.json
 
 # --- Python ---
+unsloth_compiled_cache/
 __pycache__/
 .venv/
 venv/

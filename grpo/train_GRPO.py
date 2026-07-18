@@ -108,7 +108,11 @@ class GRPOTrainer:
             report_to="swanlab",
             run_name="qwen3-4B-Instruct-GRPO",
             output_dir="grpo_outputs",
-            seed=3407, 
+            seed=3407,
+            # GSPO/GRPO 算法配置
+            importance_sampling_level=config.IMPORTANCE_SAMPLING_LEVEL,
+            loss_type=config.LOSS_TYPE,
+            num_iterations=config.NUM_ITERATIONS,
             # 按顺序采样配置 - 不随机打乱数据
             shuffle_dataset=False,  # 禁用数据集的随机打乱
             dataloader_drop_last=False,  # 不丢弃最后一个不完整的批次
@@ -218,6 +222,9 @@ def main():
         # print("probe", tuple(out.logits.shape))  # 期望 (..., 2560)
 
         # 设置聊天模板
+        import swanlab
+        swanlab.init(project="qwen3-4B-Instruct-GRPO", config={"algorithm": config.RL_ALGORITHM})
+
         from unsloth.chat_templates import get_chat_template
         tokenizer = get_chat_template(
             tokenizer,

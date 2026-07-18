@@ -29,16 +29,31 @@ class Config:
 
     # 数据集参数
     IDX_START = 0  # 数据起始索引（包含）
-    IDX_END = 10000  # 数据结束索引（不包含）
+    IDX_END = 100  # 数据结束索引（不包含）
     
     # 批量评分配置
     MAX_CONCURRENT_REQUESTS = 32  # 最大并发请求数
+
+    # RL算法选择
+    RL_ALGORITHM = "gspo"  # "grpo" | "gspo" — GSPO 使用序列级 importance sampling，更稳定
 
     # 训练参数
     LORA_RANK = 16
     TRAINING_EPOCHS = 1
     SAVE_STEPS = 50
     RANDOM_SEED = 42
+
+    @classmethod
+    def _apply_rl_algorithm_config(cls):
+        """根据 RL_ALGORITHM 设置算法相关参数"""
+        if cls.RL_ALGORITHM == "gspo":
+            cls.IMPORTANCE_SAMPLING_LEVEL = "sequence"
+            cls.LOSS_TYPE = "grpo"
+            cls.NUM_ITERATIONS = 2  # >1 才让 GSPO 的 importance sampling 生效（off-policy）
+        else:  # grpo
+            cls.IMPORTANCE_SAMPLING_LEVEL = "token"
+            cls.LOSS_TYPE = "bnpo"
+            cls.NUM_ITERATIONS = 1
     
     @classmethod
     def _apply_gpu_config(cls):
@@ -102,6 +117,7 @@ class Config:
     def initialize(cls):
         """初始化配置"""
         cls._apply_gpu_config()
+        cls._apply_rl_algorithm_config()
 
 
 # 创建全局配置实例
