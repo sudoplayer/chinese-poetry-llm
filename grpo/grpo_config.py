@@ -29,7 +29,7 @@ class Config:
 
     # 数据集参数
     IDX_START = 0  # 数据起始索引（包含）
-    IDX_END = 100  # 数据结束索引（不包含）
+    IDX_END = 32  # 数据结束索引（不包含）
     
     # 批量评分配置
     MAX_CONCURRENT_REQUESTS = 32  # 最大并发请求数
@@ -40,7 +40,6 @@ class Config:
     # 训练参数
     LORA_RANK = 16
     TRAINING_EPOCHS = 1
-    SAVE_STEPS = 50
     RANDOM_SEED = 42
 
     @classmethod
@@ -65,6 +64,8 @@ class Config:
         if cls.GPU_FLAG == 'RTX2080Ti':
             # RTX2080Ti 专用优化配置
             print("检测到RTX2080Ti，启用专用优化配置...")
+            os.environ["TORCHDYNAMO_DISABLE"] = "1"       # 禁用 torch.compile/dynamo → 避免 Triton fused kernel
+            os.environ["UNSLOTH_COMPILE_DISABLE"] = "1"   # 让 Unsloth 不走编译路径
             os.environ["FLASH_ATTENTION_2_DISABLE"] = "1" # 禁用 FA2
             os.environ["TRITON_SHARED_MEMORY_LIMIT"] = "65536"
             cls.MODEL_NAME = os.getenv(
@@ -112,6 +113,7 @@ class Config:
                 )
 
         cls.TRAINING_STEPS = int(cls.TRAINING_EPOCHS * (cls.IDX_END - cls.IDX_START) / (cls.PER_DEVICE_TRAIN_BATCH_SIZE/cls.NUM_GENERATIONS) / cls.GRADIENT_ACCUMULATION_STEPS)
+        cls.SAVE_STEPS = max(1, cls.TRAINING_STEPS // 2)
     
     @classmethod
     def initialize(cls):

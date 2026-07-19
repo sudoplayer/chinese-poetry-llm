@@ -11,7 +11,7 @@ import json
 import re
 import logging
 import asyncio
-from typing import Dict, List
+from typing import Dict, List, Optional
 from pydantic import BaseModel, Field, ValidationError
 from openai import AsyncOpenAI
 
@@ -124,78 +124,76 @@ class PoetryEvaluator:
             f"**诗作全文：**\n{content}"
         )
         return prompt
+
+    @staticmethod
+    def _sanitize_json_text(text: str) -> str:
+        """去除 JSON 字符串中的非法控制字符"""
+        return re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", " ", text)
+
+    def _parse_scoring_response(self, response_text: str) -> Optional[ScoringResponse]:
+        """解析 API 返回的评分 JSON，失败返回 None"""
+        sanitized = self._sanitize_json_text(response_text.strip())
+        try:
+            return ScoringResponse(**json.loads(sanitized))
+        except (json.JSONDecodeError, ValidationError):
+            return None
+
+    def _build_failed_result(self, reason: str) -> Dict:
+        return {
+            "体裁判断": reason,
+            "详细评审": self.DEFAULT_DETAILED_REVIEW,
+            "得分": self.DEFAULT_SCORING_DETAILS,
+        }
+
+    async def _call_scoring_api(self, score_prompt: str, temperature: float) -> str:
+        response = await self.client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "user", "content": score_prompt}],
+            stream=False,
+            temperature=temperature,
+            response_format={"type": "json_object"},
+            extra_body={"thinking": {"type": "disabled"}},
+        )
+        return response.choices[0].message.content.strip()
     
     async def _evaluate_single_poetry_async(self, poetry_content: str) -> Dict:
         """异步评价单首诗词"""
-        default_scoring_details = self.DEFAULT_SCORING_DETAILS
-
         poetry_text = poetry_content
         if not poetry_text:
             logger.warning("诗作内容为空")
-            return {   
-                '体裁判断': '诗作内容为空',
-                '详细评审': self.DEFAULT_DETAILED_REVIEW,
-                '得分': default_scoring_details
-            }
+            return self._build_failed_result("诗作内容为空")
         
         score_prompt = self._get_score_prompt(poetry_text)
+        temperatures = [0.4, 0.1, 0.1]
         
         async with self.semaphore:
-            try:
-                # 使用OpenAI异步客户端
-                response = await self.client.chat.completions.create(
-                    model=self.model,
-                    messages=[{"role": "user", "content": score_prompt}],
-                    stream=False,
-                    temperature=1.0,
-                    extra_body={"thinking": {"type": "disabled"}}
-                )
-                
-                response_text = response.choices[0].message.content.strip()
-                
-                # 提取JSON部分
-                json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
-                if not json_match:
-                    logger.error("无法从诗作评价中提取JSON格式")
-                    return {
-                        '体裁判断': '无法从诗作评价中提取JSON格式',
-                        '详细评审': self.DEFAULT_DETAILED_REVIEW,
-                        '得分': default_scoring_details
-                    }
-                
-                json_text = json_match.group(0)
-                
-                # 解析JSON响应
+            for attempt, temperature in enumerate(temperatures):
                 try:
-                    response_data = json.loads(json_text)
-                    scoring_response = ScoringResponse(**response_data)
-                    
-                    # 验证分数范围
+                    response_text = await self._call_scoring_api(score_prompt, temperature)
+                    scoring_response = self._parse_scoring_response(response_text)
+                    if scoring_response is None:
+                        if attempt < len(temperatures) - 1:
+                            logger.warning(
+                                f"JSON解析失败，重试 {attempt + 1}/{len(temperatures) - 1}: "
+                                f"{response_text[:200]!r}"
+                            )
+                            continue
+                        logger.error(f"JSON解析失败: {response_text[:200]!r}")
+                        return self._build_failed_result("JSON解析失败")
+
                     if not (0 <= scoring_response.得分.总分 <= 100):
                         logger.warning(f"总分超出范围: {scoring_response.得分.总分}")
                         scoring_response.得分.总分 = max(0, min(100, scoring_response.得分.总分))
-                    
-                    return { 
-                        '体裁判断': scoring_response.体裁判断,
-                        '详细评审': scoring_response.详细评审,
-                        '得分': scoring_response.得分,
-                    }
-                    
-                except (json.JSONDecodeError, ValidationError) as e:
-                    logger.error(f"JSON解析失败: {e}")
+
                     return {
-                        '体裁判断': f'JSON解析失败',
-                        '详细评审': self.DEFAULT_DETAILED_REVIEW,
-                        '得分': default_scoring_details,
+                        "体裁判断": scoring_response.体裁判断,
+                        "详细评审": scoring_response.详细评审,
+                        "得分": scoring_response.得分,
                     }
-            
-            except Exception as e:
-                logger.error(f"API调用异常: {e}")
-                return {
-                    '体裁判断': 'API调用异常',
-                    '详细评审': self.DEFAULT_DETAILED_REVIEW,
-                    '得分': default_scoring_details,
-                }
+
+                except Exception as e:
+                    logger.error(f"API调用异常: {e}")
+                    return self._build_failed_result("API调用异常")
     
     async def _evaluate_poetry_batch_async(self, poetry_contents: List[str]) -> List[Dict]:
         """异步批量评价诗词"""

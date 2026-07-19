@@ -108,7 +108,7 @@ class GRPOTrainer:
             report_to="swanlab",
             run_name="qwen3-4B-Instruct-GRPO",
             output_dir="grpo_outputs",
-            seed=3407,
+            seed=config.RANDOM_SEED,
             # GSPO/GRPO 算法配置
             importance_sampling_level=config.IMPORTANCE_SAMPLING_LEVEL,
             loss_type=config.LOSS_TYPE,
@@ -118,13 +118,9 @@ class GRPOTrainer:
             dataloader_drop_last=False,  # 不丢弃最后一个不完整的批次
             # 混合精度训练配置
             bf16=config.USE_BF16,  # 根据GPU类型设置精度
-            # 显式设置生成参数以避免警告
+            # 显式设置生成参数
             temperature=0.7,  # 与模型默认值一致
             top_p=0.8,        # 与模型默认值一致
-            generation_kwargs={
-                "max_length": 262144,  # 与模型默认值一致
-                "bos_token_id": 151643,  # 与模型默认值一致
-            }
         )
         
         # 创建训练器
@@ -240,11 +236,15 @@ def main():
             ],
             lora_alpha=config.LORA_RANK*2,
             use_gradient_checkpointing="unsloth",
-            random_state=3407,
+            random_state=config.RANDOM_SEED,
         )
 
         # 显式禁用缓存以避免警告
         model.config.use_cache = False
+        if getattr(model, "generation_config", None) is not None:
+            model.generation_config.max_length = None
+        if getattr(model.config, "max_length", None):
+            model.config.max_length = None
         logger.info("模型初始化完成")
         
         # 3. 初始化组件

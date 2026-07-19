@@ -51,16 +51,17 @@ flowchart LR
 
 ### 1. Environment Setup
 
+Requires [uv](https://docs.astral.sh/uv/) and Python 3.11. Dependencies (including PyTorch for CUDA 12.8) are managed via `pyproject.toml` / `uv.lock`.
+
 ```bash
 git clone <your-repo-url>
 cd chinese-poetry-llm
 
-python -m venv .venv && source .venv/bin/activate
-
-# Install PyTorch per your CUDA version: https://pytorch.org
-pip install torch
-pip install -r requirements.txt
+# Install uv: https://docs.astral.sh/uv/getting-started/installation/
+uv sync
 ```
+
+Run scripts with `uv run` (no manual venv activation needed), or activate `.venv` after `uv sync` and use `python` as usual.
 
 Set environment variables (in your shell or a `.env` file):
 
@@ -96,16 +97,16 @@ Run the following from the **project root**:
 
 ```bash
 # Stage 1: Supervised Fine-Tuning
-python sft/train_sft.py
+uv run python sft/train_sft.py
 
 # Stage 2: GRPO Reinforcement Learning (requires DeepSeek API)
-python grpo/train_GRPO.py
+uv run python grpo/train_GRPO.py
 
 # Batch Evaluation
-python eval/eval.py
+uv run python eval/eval.py
 
 # Analyze evaluation logs (score distribution visualizations, etc.)
-python eval/log_analyzer.py
+uv run python eval/log_analyzer.py
 ```
 
 GRPO training artifacts are written to `grpo_outputs/` and `grpo_lora_adapters/` by default.
@@ -176,7 +177,8 @@ chinese-poetry-llm/
 ├── grpo/                 # GRPO Reinforcement Learning (TRL + DeepSeek reward)
 ├── eval/                 # Batch evaluation and log analysis
 ├── data/                 # Data directory (includes sample.csv)
-└── requirements.txt
+├── pyproject.toml        # Project dependencies (uv)
+└── uv.lock               # Locked dependency versions
 ```
 
 ---

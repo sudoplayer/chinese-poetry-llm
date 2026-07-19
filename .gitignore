@@ -11,6 +11,7 @@ grpo_outputs/
 
 # --- Logs ---
 logs/
+swanlog/
 eval_logs/
 grpo_logs/
 training_logs/

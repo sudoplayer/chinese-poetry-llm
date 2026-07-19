@@ -51,16 +51,17 @@ flowchart LR
 
 ### 1. 环境准备
 
+需要 [uv](https://docs.astral.sh/uv/) 与 Python 3.11。依赖（含 CUDA 12.8 版 PyTorch）由 `pyproject.toml` / `uv.lock` 统一管理。
+
 ```bash
 git clone <your-repo-url>
 cd chinese-poetry-llm
 
-python -m venv .venv && source .venv/bin/activate
-
-# 按 CUDA 版本安装 PyTorch：https://pytorch.org
-pip install torch
-pip install -r requirements.txt
+# 安装 uv：https://docs.astral.sh/uv/getting-started/installation/
+uv sync
 ```
+
+运行脚本时使用 `uv run`（无需手动激活虚拟环境）；或在 `uv sync` 后激活 `.venv`，照常使用 `python`。
 
 设置环境变量（可在 shell 或 `.env` 文件中配置）：
 
@@ -96,16 +97,16 @@ cp data/sample.csv data/dataset_test.csv
 
 ```bash
 # 阶段一：监督微调
-python sft/train_sft.py
+uv run python sft/train_sft.py
 
 # 阶段二：GRPO 强化学习（需 DeepSeek API）
-python grpo/train_GRPO.py
+uv run python grpo/train_GRPO.py
 
 # 批量评测
-python eval/eval.py
+uv run python eval/eval.py
 
 # 分析评测日志（可视化得分分布等）
-python eval/log_analyzer.py
+uv run python eval/log_analyzer.py
 ```
 
 GRPO 训练产物默认写入 `grpo_outputs/`、`grpo_lora_adapters/`。
@@ -177,7 +178,8 @@ chinese-poetry-llm/
 ├── grpo/                 # GRPO 强化学习（TRL + DeepSeek 奖励）
 ├── eval/                 # 批量评测与日志分析
 ├── data/                 # 数据目录（含 sample.csv 示例）
-└── requirements.txt
+├── pyproject.toml        # 项目依赖（uv 管理）
+└── uv.lock               # 锁定依赖版本
 ```
 
 ---
